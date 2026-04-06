@@ -33,48 +33,50 @@ fun listImagesInReadingOrder(epubPath: String): List<String> {
             .newDocumentBuilder()
             .parse(zip.getInputStream(opfEntry))
 
-    val manifest = mutableMapOf<String, String>()
     val manifestItems = opfDoc.getElementsByTagName("item")
-    for (i in 0 until manifestItems.length) {
-        val item = manifestItems.item(i)
-        val id = item.attributes.getNamedItem("id").nodeValue
-        val href = item.attributes.getNamedItem("href").nodeValue
-        manifest[id] = href
-    }
+    val manifest =
+        (0 until manifestItems.length).associate { i ->
+            val item = manifestItems.item(i)
+            val id = item.attributes.getNamedItem("id").nodeValue
+            val href = item.attributes.getNamedItem("href").nodeValue
+            id to href
+        }
 
-    val spine = mutableListOf<String>()
     val spineItems = opfDoc.getElementsByTagName("itemref")
-    for (i in 0 until spineItems.length) {
-        val idref =
-            spineItems
-                .item(i)
-                .attributes
-                .getNamedItem("idref")
-                .nodeValue
-        manifest[idref]?.let { spine.add(it) }
-    }
+    val spine =
+        (0 until spineItems.length).mapNotNull { i ->
+            val idref =
+                spineItems
+                    .item(i)
+                    .attributes
+                    .getNamedItem("idref")
+                    .nodeValue
 
-    val imagePaths = mutableListOf<String>()
+            manifest[idref]
+        }
+
     val imgRegex = Regex("""<img[^>]+src=["']([^"']+)["']""")
 
-    for (xhtml in spine) {
-        val fullPath = if (opfDir.isEmpty()) xhtml else "$opfDir/$xhtml"
-        val entry = zip.getEntry(fullPath) ?: continue
-        val content = zip.getInputStream(entry).bufferedReader().readText()
+    val imagePaths =
+        spine.flatMap { xhtml ->
+            val fullPath = if (opfDir.isEmpty()) xhtml else "$opfDir/$xhtml"
+            val entry = zip.getEntry(fullPath) ?: return@flatMap emptyList()
 
-        // per page only unique src-values
-        val pageImages = mutableSetOf<String>()
+            val content =
+                zip
+                    .getInputStream(entry)
+                    .bufferedReader()
+                    .readText()
 
-        imgRegex.findAll(content).forEach { match ->
-            val src = match.groupValues[1]
-            if (pageImages.add(src)) {
-                val normalized = normalizePathForZip(opfDir, xhtml, src)
-                imagePaths.add(normalized)
-            }
+            imgRegex
+                .findAll(content)
+                .map { it.groupValues[1] } // extract src
+                .distinct() // per page one unique src
+                .map { src -> normalizePathForZip(opfDir, xhtml, src) }
+                .toList()
         }
-    }
 
-    return imagePaths
+    return imagePaths.distinct()
 }
 
 // Returns the real zip-path of the picture file
@@ -106,10 +108,8 @@ fun extractImagesToCbz(
     outputCbzPath: String,
 ) {
     val zip = ZipFile(epubPath)
-    val imagesWithDuplicates = listImagesInReadingOrder(epubPath)
 
-    // Remove duplicates, keep the order
-    val images = imagesWithDuplicates.distinct()
+    val images = listImagesInReadingOrder(epubPath)
 
     val total = images.size
     var processed = 0
@@ -119,7 +119,7 @@ fun extractImagesToCbz(
         images.forEachIndexed { index, imagePath ->
             val entry = zip.getEntry(imagePath)
             if (entry == null) {
-                println("WARN: Bild nicht gefunden: $imagePath")
+                println("WARN: Picture not found: $imagePath")
                 return@forEachIndexed
             }
 
@@ -139,8 +139,6 @@ fun extractImagesToCbz(
             printProgress(processed, total)
         }
     }
-
-    println("\nDone! CBZ created: $outputCbzPath")
 }
 
 fun printProgress(
