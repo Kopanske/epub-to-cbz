@@ -34,7 +34,7 @@ versionCatalogUpdate {
 }
 
 application {
-    mainClass = "org.example.MainKt"
+    mainClass = "com.github.kopanske.epubtopdf.MainKt"
 }
 
 tasks.shadowJar {
