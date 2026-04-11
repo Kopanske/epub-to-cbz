@@ -75,7 +75,7 @@ fun listImagesInReadingOrder(epubPath: String): List<String> {
                 .map { src -> normalizePathForZip(opfDir, xhtml, src) }
                 .toList()
         }
-
+    zip.close()
     return imagePaths.distinct()
 }
 
@@ -101,11 +101,13 @@ fun normalizePathForZip(
 
     return "$prefix/$imgSrc"
         .replace("//", "/")
+        .removePrefix("/")
 }
 
 fun extractImagesToCbz(
     epubPath: String,
     outputCbzPath: String,
+    onProgress: (current: Int, total: Int) -> Unit = { _, _ -> },
 ) {
     val zip = ZipFile(epubPath)
 
@@ -136,19 +138,8 @@ fun extractImagesToCbz(
             outZip.closeEntry()
 
             processed++
-            printProgress(processed, total)
+            onProgress(processed, total)
         }
     }
-}
-
-fun printProgress(
-    done: Int,
-    total: Int,
-) {
-    val percent = (done * 100) / total
-    val barLength = 40
-    val filled = (percent * barLength) / 100
-    val bar = "█".repeat(filled) + " ".repeat(barLength - filled)
-
-    print("\r[$bar] $percent% ($done / $total)")
+    zip.close()
 }
