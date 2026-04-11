@@ -1,9 +1,6 @@
 [versions]
-catalog-update = "1.1.0"
-kotest = "6.1.4"
-kotlin = "2.3.10"
-ktlint = "14.0.1"
-shadow = "8.1.1"
+kotest = "6.1.11"
+kotlin = "2.3.20"
 
 [libraries]
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
@@ -12,6 +9,6 @@ kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
-version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "catalog-update" }
+ktlint = "org.jmailen.kotlinter:5.4.2"
+shadow = "com.github.johnrengelman.shadow:8.1.1"
+version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.0"
