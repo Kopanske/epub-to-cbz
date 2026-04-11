@@ -16,7 +16,21 @@ fun main(args: Array<String>) {
     epubFiles.forEach { epubFile ->
         val outputFileName = outputDir + "\\" + epubFile.name.substringBeforeLast(".") + ".cbz"
         println("Reading EPUB: $epubFile")
-        extractImagesToCbz(epubFile.absolutePath, outputFileName)
+        extractImagesToCbz(epubFile.absolutePath, outputFileName) { current, total ->
+            printProgress(current, total)
+        }
         println("Done! CBZ created: $outputFileName")
     }
+}
+
+fun printProgress(
+    done: Int,
+    total: Int,
+) {
+    val percent = (done * 100) / total
+    val barLength = 40
+    val filled = (percent * barLength) / 100
+    val bar = "█".repeat(filled) + " ".repeat(barLength - filled)
+
+    print("\r[$bar] $percent% ($done / $total)")
 }
