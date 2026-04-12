@@ -39,7 +39,7 @@ application {
 
 tasks.shadowJar {
     archiveBaseName.set("ePubToCbz")
-    archiveVersion.set("1.0.0")
+    archiveVersion.set("1.0.2")
     archiveClassifier.set("all")
 
     mergeServiceFiles()
