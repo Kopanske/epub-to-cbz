@@ -22,11 +22,38 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Extract version from tag
+        id: tag_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Write version into gradle.properties
+        run: |
+          echo "version=$VERSION" > gradle.properties
+          cat gradle.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build fat JAR
         run: ./gradlew shadowJar
 
-      - name: Create GitHub Release with auto‑generated changelog
+      - name: Generate SHA256 checksum
+        id: checksum
+        run: |
+          FILE=$(ls build/libs/*-all.jar)
+          sha256sum "$FILE" > "$FILE.sha256"
+          echo "value=$(cat $FILE.sha256)" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release with changelog + checksum
         uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            **SHA‑256 Checksum**
+            ```
+            ${{ steps.checksum.outputs.value }}
+            ```
+          files: |
+            build/libs/*-all.jar
+            build/libs/*-all.jar.sha256
