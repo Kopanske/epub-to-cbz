@@ -13,13 +13,22 @@ fun main(args: Array<String>) {
     val outputDir = args[1]
 
     val epubFiles = retrieveFilePathsForExtension(inputDir, "epub")
+    if (epubFiles.isEmpty()) {
+        println("No ebooks found to convert!")
+    }
     epubFiles.forEach { epubFile ->
         val outputFileName = outputDir + "\\" + epubFile.name.substringBeforeLast(".") + ".cbz"
         println("Reading EPUB: $epubFile")
-        extractImagesToCbz(epubFile.absolutePath, outputFileName) { current, total ->
-            printProgress(current, total)
-        }
-        println("Done! CBZ created: $outputFileName")
+        extractImagesToCbz(
+            epubPath = epubFile.absolutePath,
+            outputCbzPath = outputFileName,
+            onProgress = { current, total ->
+                printProgress(current, total)
+            },
+        ).fold(
+            ifLeft = { println(it.message) },
+            ifRight = { println(" Done!") },
+        )
     }
 }
 
