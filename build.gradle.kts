@@ -1,9 +1,8 @@
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("kotlin-conventions")
     alias(libs.plugins.version.catalog.update)
-    alias(libs.plugins.ktlint)
     alias(libs.plugins.shadow)
     application
 }
@@ -19,10 +18,6 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(libs.kotest.framework.engine)
     testImplementation(libs.kotest.runner)
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 tasks.test {
