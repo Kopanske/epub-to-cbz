@@ -125,30 +125,28 @@ fun extractImagesToCbz(
     either {
         val images = listImagesInReadingOrder(epubPath).bind()
 
-        val total = images.size
-
         catch(
             block = {
-                ZipFile(epubPath).use { inZip ->
-                    ZipOutputStream(File(outputCbzPath).outputStream()).use { outZip ->
+                ZipFile(epubPath).use { inputZip ->
+                    ZipOutputStream(File(outputCbzPath).outputStream()).use { outputZip ->
 
                         images.forEachIndexed { index, imagePath ->
-                            val entry = inZip.getEntry(imagePath)
-                            ensureNotNull(entry) { EbookError.FileNotfoundError("Could not fine image $imagePath", null) }
+                            val entry = inputZip.getEntry(imagePath)
+                            ensureNotNull(entry) { EbookError.FileNotfoundError("Could not fine image $imagePath") }
 
-                            val ext = imagePath.substringAfterLast(".", "bin")
+                            val ext = imagePath.substringAfterLast(".")
                             val newName = "%04d.%s".format(index + 1, ext)
 
                             val newEntry = ZipEntry(newName)
-                            outZip.putNextEntry(newEntry)
+                            outputZip.putNextEntry(newEntry)
 
-                            inZip.getInputStream(entry).use { input ->
-                                input.copyTo(outZip)
+                            inputZip.getInputStream(entry).use { input ->
+                                input.copyTo(outputZip)
                             }
 
-                            outZip.closeEntry()
+                            outputZip.closeEntry()
 
-                            onProgress(index + 1, total)
+                            onProgress(index + 1, images.size)
                         }
                     }
                 }

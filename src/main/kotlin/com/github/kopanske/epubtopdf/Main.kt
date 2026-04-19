@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     }
     epubFiles.forEach { epubFile ->
         val outputFileName = outputDir + "\\" + epubFile.name.substringBeforeLast(".") + ".cbz"
-        println("Reading EPUB: $epubFile")
+        println("📖: ${Colors.YELLOW}${epubFile.name}${Colors.RESET}")
         extractImagesToCbz(
             epubPath = epubFile.absolutePath,
             outputCbzPath = outputFileName,
@@ -26,8 +26,8 @@ fun main(args: Array<String>) {
                 printProgress(current, total)
             },
         ).fold(
-            ifLeft = { println(it.message) },
-            ifRight = { println(" Done!") },
+            ifLeft = { println(" ❌ ${it.message}") },
+            ifRight = { println(" ✅") },
         )
     }
 }
@@ -37,9 +37,20 @@ fun printProgress(
     total: Int,
 ) {
     val percent = (done * 100) / total
-    val barLength = 40
-    val filled = (percent * barLength) / 100
-    val bar = "█".repeat(filled) + " ".repeat(barLength - filled)
+    val filled = (percent * BAR_LENGTH) / 100
+    val bar = "${Colors.BLUE}█".repeat(filled) + "${Colors.BLUE}░".repeat(BAR_LENGTH - filled)
 
-    print("\r[$bar] $percent% ($done / $total)")
+    print("\r${Colors.YELLOW}[$bar${Colors.YELLOW}]${Colors.GREEN} $percent% ($done / $total)${Colors.RESET}")
+}
+
+const val BAR_LENGTH = 40
+
+enum class Colors(
+    val value: String,
+) {
+    RESET("\u001B[0m"),
+    RED("\u001B[31m"),
+    GREEN("\u001B[32m"),
+    YELLOW("\u001B[33m"),
+    BLUE("\u001B[34m"),
 }

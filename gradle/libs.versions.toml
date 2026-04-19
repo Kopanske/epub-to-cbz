@@ -5,7 +5,6 @@ arrow = "2.2.2.1"
 
 [libraries]
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
-kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
