@@ -2,7 +2,7 @@ package com.github.kopanske.epubtopdf.epub
 
 sealed class EbookError(
     open val message: String,
-    open val cause: Throwable?,
+    open val cause: Throwable? = null,
 ) {
     data class FileAccessError(
         override val message: String,
@@ -11,6 +11,6 @@ sealed class EbookError(
 
     data class FileNotfoundError(
         override val message: String,
-        override val cause: Throwable?,
+        override val cause: Throwable? = null,
     ) : EbookError(message, cause)
 }

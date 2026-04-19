@@ -18,7 +18,6 @@ dependencies {
     implementation(libs.arrow.core)
     testImplementation(kotlin("test"))
     testImplementation(libs.kotest.framework.engine)
-    testImplementation(libs.kotest.property)
     testImplementation(libs.kotest.runner)
 }
 
