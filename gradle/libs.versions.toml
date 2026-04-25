@@ -1,15 +1,16 @@
 [versions]
+arrow = "2.2.2.1"
 kotest = "6.1.11"
 kotlin = "2.3.20"
-arrow = "2.2.2.1"
+kotlinter = "5.4.2"
 
 [libraries]
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ktlint = "org.jmailen.kotlinter:5.4.2"
-shadow = "com.github.johnrengelman.shadow:8.1.1"
+ktlint = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+shadow = "com.gradleup.shadow:9.4.1"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.0"
