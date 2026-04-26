@@ -9,4 +9,6 @@ interface FileAccessPort {
         outputPath: String,
         outputExtension: String,
     ): List<EBookDescriptor>
+
+    fun createMissingDirectories(filePaths: List<EBookDescriptor>)
 }
