@@ -1,8 +1,12 @@
 package com.github.kopanske.core.ports
 
-fun interface FileAccessPort {
-    fun findPathsForExtension(
+import com.github.kopanske.core.model.EBookDescriptor
+
+interface FileAccessPort {
+    fun getEbooks(
         startPath: String,
-        extension: String,
-    ): List<String>
+        inputExtension: String,
+        outputPath: String,
+        outputExtension: String,
+    ): List<EBookDescriptor>
 }

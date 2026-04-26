@@ -5,11 +5,10 @@ plugins {
 rootProject.name = "epub-to-cbz"
 
 include(
+    "app",
     "core",
+    "adapters:CliAdapter",
     "adapters:EpubAdapter",
     "adapters:FileAccessAdapter",
-    "adapters:TerminalOutputAdapter"
+    "adapters:TerminalOutputAdapter",
 )
-
-include("app")
-include("adapters:CliAdapter")

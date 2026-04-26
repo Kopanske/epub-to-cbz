@@ -5,4 +5,6 @@ plugins {
 dependencies {
     api(project(":core"))
     testImplementation(kotlin("test"))
+    testImplementation(libs.kotest.framework.engine)
+    testImplementation(libs.kotest.runner)
 }
