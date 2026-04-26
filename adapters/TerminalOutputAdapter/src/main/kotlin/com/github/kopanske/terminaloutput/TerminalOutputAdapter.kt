@@ -21,7 +21,6 @@ class TerminalOutputAdapter :
         val percent = (current * 100) / total
         val filled = (percent * BAR_LENGTH) / 100
         val bar = "$BLUE█".repeat(filled) + "$BLUE░".repeat(BAR_LENGTH - filled)
-        val totalLen = total.toString().length
 
         print(
             "\r$YELLOW[$bar$YELLOW]$GREEN ${percent.padded(3)}% (${current.padded(4)} / ${total.padded(4)})$RESET",
