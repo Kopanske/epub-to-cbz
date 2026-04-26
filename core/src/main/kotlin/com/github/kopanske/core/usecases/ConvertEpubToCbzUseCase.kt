@@ -27,6 +27,8 @@ class ConvertEpubToCbzUseCase(
             return
         }
 
+        fileAccess.createMissingDirectories(ePubs)
+
         ePubs.forEach { ePub ->
             userOutput.displayMessage("📖: ${ePub.name}")
             epubProcessor
