@@ -1,7 +1,6 @@
 package com.github.kopanske.epubtopdf.app
 
 import com.github.kopanske.cli.CliAdapter
-import com.github.kopanske.core.ports.UserInputPort
 import com.github.kopanske.core.usecases.ConvertEpubToCbzUseCase
 import com.github.kopanske.epup.EpubAdapter
 import com.github.kopanske.fileaccess.FileAccessAdapter
@@ -13,7 +12,7 @@ fun main(args: Array<String>) {
     val useCase =
         ConvertEpubToCbzUseCase(
             fileAccess = FileAccessAdapter(),
-            epub = EpubAdapter(userOutput),
+            epubProcessor = EpubAdapter(userOutput),
             userOutput = userOutput,
         )
     val userInput = CliAdapter(userOutput, useCase)

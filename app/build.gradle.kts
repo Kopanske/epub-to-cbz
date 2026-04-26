@@ -16,8 +16,6 @@ dependencies {
     implementation(project(":adapters:TerminalOutputAdapter"))
 }
 
-
-
 tasks.shadowJar {
     archiveBaseName.set("ePubToCbz")
     archiveClassifier.set("all")

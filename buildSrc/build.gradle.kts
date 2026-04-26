@@ -1,14 +1,5 @@
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.`kotlin-dsl`
-
-
 plugins {
     `kotlin-dsl`
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 repositories {

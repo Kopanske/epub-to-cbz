@@ -9,8 +9,3 @@ dependencies {
     testImplementation(libs.kotest.framework.engine)
     testImplementation(libs.kotest.runner)
 }
-
-
-tasks.test {
-    useJUnitPlatform()
-}
