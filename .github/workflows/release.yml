@@ -46,7 +46,7 @@ jobs:
           echo "value=$(cat $FILE.sha256)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release with changelog + checksum
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body: |
             **SHA‑256 Checksum**
