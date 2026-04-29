@@ -9,6 +9,11 @@ updates:
       - "dependencies"
       - "gradle"
     open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -18,3 +23,8 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
