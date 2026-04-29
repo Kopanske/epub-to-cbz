@@ -11,6 +11,6 @@ kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ktlint = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 shadow = "com.gradleup.shadow:9.4.1"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.0"
