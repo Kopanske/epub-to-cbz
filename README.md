@@ -34,8 +34,15 @@ Check your Java version with:
     java -jar ePubToCbz-<version>-all.jar <input directory> <output directory>
 
 ### Example
+Linux/Mac:
+````shell
+java -jar ePubToCbz-1.3.0-all.jar ./myEbooks ./myComicBooks
+````
+Windows:
+````shell
+java -jar ePubToCbz-1.3.0-all.jar E:\myEbooks E:\myComicBooks
+````
 
-    java -jar ePubToCbz-1.0.5-all.jar ./myEbooks ./myComicBooks
 
 - **Input directory**: contains `.epub` files
 - **Output directory**: CBZ files will be written there
@@ -47,6 +54,16 @@ Check your Java version with:
 1. Download the latest release from the GitHub releases page:
    https://github.com/Kopanske/epub-to-cbz/releases
 2. Run it using `java -jar`
+
+---
+
+## Troubleshooting
+### Windows Command Prompt
+If you encounter issues with character encoding in the Windows Command Prompt, you can switch to UTF-8 encoding by running:
+```shell
+chcp 65001
+```
+This should work for PowerShell ann cmd.
 
 ---
 
@@ -67,4 +84,4 @@ A GitHub Actions workflow will automatically:
 
 ## License
 
-MIT
+This software is published under the MIT License. See the `LICENSE` file for details.
