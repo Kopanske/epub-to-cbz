@@ -57,84 +57,109 @@ class EpubAdapter(
 
     private fun listImagesInReadingOrder(epubPath: String): Either<EbookError, List<String>> =
         either {
-            val imageList =
-                catch(
-                    block = {
-                        ZipFile(epubPath).use { zip ->
-                            val containerEntry = zip.getEntry("META-INF/container.xml")
-                            val containerDoc =
-                                DocumentBuilderFactory
-                                    .newInstance()
-                                    .newDocumentBuilder()
-                                    .parse(zip.getInputStream(containerEntry))
+            catch(
+                block = {
+                    ZipFile(epubPath).use { zip ->
+                        val containerEntry =
+                            ensureNotNull(zip.getEntry("META-INF/container.xml")) {
+                                EbookError.FileNotfoundError("Could not find META-INF/container.xml")
+                            }
 
-                            val opfPath =
-                                containerDoc
-                                    .getElementsByTagName("rootfile")
-                                    .item(0)
-                                    .attributes
-                                    .getNamedItem("full-path")
-                                    .nodeValue
+                        val containerDoc =
+                            DocumentBuilderFactory
+                                .newInstance()
+                                .newDocumentBuilder()
+                                .parse(zip.getInputStream(containerEntry))
 
-                            val opfDir = opfPath.substringBeforeLast("/", "")
+                        val opfPath =
+                            containerDoc
+                                .getElementsByTagName("rootfile")
+                                .item(0)
+                                .attributes
+                                .getNamedItem("full-path")
+                                .nodeValue
 
-                            val opfEntry = zip.getEntry(opfPath)
-                            val opfDoc =
-                                DocumentBuilderFactory
-                                    .newInstance()
-                                    .newDocumentBuilder()
-                                    .parse(zip.getInputStream(opfEntry))
+                        val opfDir = opfPath.substringBeforeLast("/", "")
 
-                            val manifestItems = opfDoc.getElementsByTagName("item")
-                            val manifest =
-                                (0 until manifestItems.length).associate { i ->
-                                    val item = manifestItems.item(i)
-                                    val id = item.attributes.getNamedItem("id").nodeValue
-                                    val href = item.attributes.getNamedItem("href").nodeValue
-                                    id to href
-                                }
+                        val opfEntry =
+                            ensureNotNull(zip.getEntry(opfPath)) {
+                                EbookError.FileNotfoundError("Could not find OPF file $opfPath")
+                            }
 
-                            val spineItems = opfDoc.getElementsByTagName("itemref")
-                            val spine =
-                                (0 until spineItems.length).mapNotNull { i ->
-                                    val idref =
-                                        spineItems
-                                            .item(i)
-                                            .attributes
-                                            .getNamedItem("idref")
-                                            .nodeValue
+                        val opfDoc =
+                            DocumentBuilderFactory
+                                .newInstance()
+                                .newDocumentBuilder()
+                                .parse(zip.getInputStream(opfEntry))
 
-                                    manifest[idref]
-                                }
+                        val manifestItems = opfDoc.getElementsByTagName("item")
+                        val manifest =
+                            (0 until manifestItems.length).associate { i ->
+                                val item = manifestItems.item(i)
+                                val id = item.attributes.getNamedItem("id").nodeValue
+                                val href = item.attributes.getNamedItem("href").nodeValue
+                                id to href
+                            }
 
-                            val imgRegex = Regex("""<img[^>]+src=["']([^"']+)["']""")
+                        // Extract cover picture from metadata
+                        val coverImagePath =
+                            (0 until opfDoc.getElementsByTagName("meta").length)
+                                .firstNotNullOfOrNull { i ->
+                                    val meta = opfDoc.getElementsByTagName("meta").item(i)
+                                    if (meta.attributes.getNamedItem("name")?.nodeValue == "cover") {
+                                        manifest[meta.attributes.getNamedItem("content")?.nodeValue]
+                                    } else {
+                                        null
+                                    }
+                                }?.let { normalizePathForZip(opfDir, "", it) }
+                                ?.takeIf { zip.getEntry(it) != null }
 
-                            val imagePaths =
-                                spine.flatMap { xhtml ->
-                                    val fullPath = if (opfDir.isEmpty()) xhtml else "$opfDir/$xhtml"
-                                    val entry = zip.getEntry(fullPath) ?: return@flatMap emptyList()
+                        val spineItems = opfDoc.getElementsByTagName("itemref")
+                        val spine =
+                            (0 until spineItems.length).mapNotNull { i ->
+                                val idref =
+                                    spineItems
+                                        .item(i)
+                                        .attributes
+                                        .getNamedItem("idref")
+                                        .nodeValue
+
+                                manifest[idref]
+                            }
+
+                        val imgRegex = Regex("""<img[^>]+src=["']([^"']+)["']""")
+
+                        val spineImages =
+                            spine
+                                .flatMap { xhtml ->
+                                    val xhtmlPath = normalizePathForZip(opfDir, "", xhtml)
+                                    val entry = zip.getEntry(xhtmlPath) ?: return@flatMap emptyList()
 
                                     val content =
                                         zip
                                             .getInputStream(entry)
                                             .bufferedReader()
-                                            .readText()
+                                            .use { it.readText() }
 
                                     imgRegex
                                         .findAll(content)
-                                        .map { it.groupValues[1] } // extract src
-                                        .distinct() // per page one unique src
+                                        .map { it.groupValues[1] }
+                                        .map { it.substringBefore('#').substringBefore('?') }
+                                        .filter { it.isNotBlank() }
+                                        .filterNot { it.startsWith("data:") || it.contains("://") }
                                         .map { src -> normalizePathForZip(opfDir, xhtml, src) }
+                                        .filter { imagePath -> zip.getEntry(imagePath) != null }
+                                        .distinct()
                                         .toList()
-                                }
-                            imagePaths.distinct()
-                        }
-                    },
-                    catch = { error ->
-                        raise(EbookError.FileAccessError(error.message ?: "Could not access $epubPath", error))
-                    },
-                )
-            imageList
+                                }.distinct()
+
+                        listOfNotNull(coverImagePath) + spineImages
+                    }
+                },
+                catch = { error ->
+                    raise(EbookError.FileAccessError(error.message ?: "Could not access $epubPath", error))
+                },
+            )
         }
 
     // Returns the real zip-path of the picture file
@@ -160,5 +185,21 @@ class EpubAdapter(
         return "$prefix/$imgSrc"
             .replace("//", "/")
             .removePrefix("/")
+            .split("/")
+            .fold(mutableListOf<String>()) { acc, segment ->
+                when (segment) {
+                    ".." -> {
+                        if (acc.isNotEmpty()) acc.removeLast()
+                    }
+
+                    ".", "" -> { // skip
+                    }
+
+                    else -> {
+                        acc.add(segment)
+                    }
+                }
+                acc
+            }.joinToString("/")
     }
 }
