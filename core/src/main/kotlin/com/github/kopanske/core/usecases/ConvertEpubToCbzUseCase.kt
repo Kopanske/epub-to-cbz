@@ -1,5 +1,7 @@
 package com.github.kopanske.core.usecases
 
+import arrow.core.getOrElse
+import com.github.kopanske.core.ports.ArchiveCreatorPort
 import com.github.kopanske.core.ports.ConvertEpubToCbzUseCasePort
 import com.github.kopanske.core.ports.EpubPort
 import com.github.kopanske.core.ports.FileAccessPort
@@ -9,6 +11,7 @@ class ConvertEpubToCbzUseCase(
     private val fileAccess: FileAccessPort,
     private val epubProcessor: EpubPort,
     private val userOutput: UserOutputPort,
+    private val archiveCreator: ArchiveCreatorPort,
 ) : ConvertEpubToCbzUseCasePort {
     override fun process(
         inputPath: String,
@@ -23,22 +26,30 @@ class ConvertEpubToCbzUseCase(
             )
 
         if (ePubs.isEmpty()) {
-            userOutput.displayMessage("◯ No ebooks found to convert! ◯")
+            userOutput.displayMessageNl("◯ No ebooks found to convert! ◯")
             return
         }
 
         fileAccess.createMissingDirectories(ePubs)
 
         ePubs.forEach { ePub ->
-            userOutput.displayMessage("📖: ${ePub.name}")
-            epubProcessor
-                .extractImagesToCbz(
-                    epubPath = ePub.inputPath,
-                    outputCbzPath = ePub.outputPath,
-                ).fold(
-                    ifLeft = { userOutput.displayMessage(" ❌ ${it.message}") },
-                    ifRight = { userOutput.displayMessage(" ✅") },
-                )
+            userOutput.displayMessage("📖 ${ePub.name} 📤")
+            val comic =
+                epubProcessor
+                    .extractImages(
+                        epubPath = ePub.inputPath,
+                        outputCbzPath = ePub.outputPath,
+                    ).getOrElse {
+                        userOutput.displayMessageNl(" ❌ ${it.message}")
+                        return@forEach
+                    }
+            userOutput.displayMessage(" 📄 (${comic.pictures.size + 1})")
+            userOutput.displayMessage(" 📦")
+            archiveCreator.writeArchive(comic).getOrElse {
+                userOutput.displayMessageNl(" ❌ ${it.message}")
+                return@forEach
+            }
+            userOutput.displayMessageNl(" ✅")
         }
     }
 }

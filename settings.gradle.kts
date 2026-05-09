@@ -12,3 +12,5 @@ include(
     "adapters:FileAccessAdapter",
     "adapters:TerminalOutputAdapter",
 )
+
+include("adapters:ZipWriter")

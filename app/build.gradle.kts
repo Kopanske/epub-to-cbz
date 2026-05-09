@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":adapters:EpubAdapter"))
     implementation(project(":adapters:FileAccessAdapter"))
     implementation(project(":adapters:TerminalOutputAdapter"))
+    implementation(project(":adapters:ZipWriter"))
 }
 
 tasks.shadowJar {

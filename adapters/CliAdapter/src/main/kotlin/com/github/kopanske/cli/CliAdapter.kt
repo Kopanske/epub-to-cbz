@@ -10,7 +10,7 @@ class CliAdapter(
 ) : UserInputPort {
     override fun checkInput(args: Array<String>) {
         if (args.size != 2) {
-            output.displayMessage("Usage: epub2cbz <input directory> <output directory>")
+            output.displayMessageNl("Usage: epub2cbz <input directory> <output directory>")
             return
         }
 
