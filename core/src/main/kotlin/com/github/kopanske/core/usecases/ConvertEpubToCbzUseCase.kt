@@ -33,7 +33,7 @@ class ConvertEpubToCbzUseCase(
         fileAccess.createMissingDirectories(ePubs)
 
         ePubs.forEach { ePub ->
-            userOutput.displayMessage("📖 ${ePub.name} 📤")
+            userOutput.displayMessage("📖 ${ePub.name}")
             val comic =
                 epubProcessor
                     .extractImages(
@@ -43,8 +43,8 @@ class ConvertEpubToCbzUseCase(
                         userOutput.displayMessageNl(" ❌ ${it.message}")
                         return@forEach
                     }
-            userOutput.displayMessage(" 📄 (${comic.pictures.size + 1})")
-            userOutput.displayMessage(" 📦")
+            userOutput.displayMessage(" 📤📄 (${comic.pictures.size + 1})")
+            userOutput.displayMessage("📦")
             archiveCreator.writeArchive(comic).getOrElse {
                 userOutput.displayMessageNl(" ❌ ${it.message}")
                 return@forEach
