@@ -1,5 +1,7 @@
 package com.github.kopanske.core.ports
 
-fun interface UserOutputPort {
+interface UserOutputPort {
+    fun displayMessageNl(message: String)
+
     fun displayMessage(message: String)
 }

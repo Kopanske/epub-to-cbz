@@ -1,4 +1,3 @@
-
 # epub-to-cbz
 
 A simple command-line tool to convert eBooks in **EPUB** format into **CBZ**
@@ -34,18 +33,40 @@ Check your Java version with:
     java -jar ePubToCbz-<version>-all.jar <input directory> <output directory>
 
 ### Example
+
 Linux/Mac:
+
 ````shell
 java -jar ePubToCbz-1.3.0-all.jar ./myEbooks ./myComicBooks
 ````
+
 Windows:
+
 ````shell
 java -jar ePubToCbz-1.3.0-all.jar E:\myEbooks E:\myComicBooks
 ````
 
-
 - **Input directory**: contains `.epub` files
 - **Output directory**: CBZ files will be written there
+
+---
+
+## Output
+
+Example:  
+Success:  
+📖 MyEpub.epub 📤 📄 (32) 📦 ✅  
+Error:  
+📖 MyEpub.epub 📤 📄 (32) 📦 ❌ Error: r:\comics\MyEpub.epub.cbz (Access is denied)
+
+| Symbol | Description                          |
+|--------|--------------------------------------|
+| 📖     | Processing of eBook started          |
+| 📤     | Picture extraction successful        |
+| 📄     | Amount of found pictures             |
+| 📦     | Creation of Archive started          |
+| ✅      | Creation of the comic was successful |
+| ❌      | Error during creation                |
 
 ---
 
@@ -58,11 +79,16 @@ java -jar ePubToCbz-1.3.0-all.jar E:\myEbooks E:\myComicBooks
 ---
 
 ## Troubleshooting
+
 ### Windows Command Prompt
-If you encounter issues with character encoding in the Windows Command Prompt, you can switch to UTF-8 encoding by running:
+
+If you encounter issues with character encoding in the Windows Command Prompt, you can switch to UTF-8 encoding by
+running:
+
 ```shell
 chcp 65001
 ```
+
 This should work for PowerShell ann cmd.
 
 ---

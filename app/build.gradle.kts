@@ -11,9 +11,10 @@ group = "com.github.kopanske"
 dependencies {
     implementation(project(":core"))
     implementation(project(":adapters:CliAdapter"))
-    implementation(project(":adapters:EpubAdapter"))
+    implementation(project(":adapters:EpubReadAdapter"))
     implementation(project(":adapters:FileAccessAdapter"))
     implementation(project(":adapters:TerminalOutputAdapter"))
+    implementation(project(":adapters:ZipWriter"))
 }
 
 tasks.shadowJar {

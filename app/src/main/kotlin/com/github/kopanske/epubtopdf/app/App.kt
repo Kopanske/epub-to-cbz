@@ -5,6 +5,7 @@ import com.github.kopanske.core.usecases.ConvertEpubToCbzUseCase
 import com.github.kopanske.epup.EpubAdapter
 import com.github.kopanske.fileaccess.FileAccessAdapter
 import com.github.kopanske.terminaloutput.TerminalOutputAdapter
+import com.github.kopanske.zip.ZipWriter
 
 fun main(args: Array<String>) {
     // Instantiating adapters (wiring)
@@ -12,8 +13,9 @@ fun main(args: Array<String>) {
     val useCase =
         ConvertEpubToCbzUseCase(
             fileAccess = FileAccessAdapter(),
-            epubProcessor = EpubAdapter(userOutput),
+            epubProcessor = EpubAdapter(),
             userOutput = userOutput,
+            archiveCreator = ZipWriter(),
         )
     val userInput = CliAdapter(userOutput, useCase)
 

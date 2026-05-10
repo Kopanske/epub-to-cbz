@@ -8,7 +8,8 @@ include(
     "app",
     "core",
     "adapters:CliAdapter",
-    "adapters:EpubAdapter",
+    "adapters:EpubReadAdapter",
     "adapters:FileAccessAdapter",
     "adapters:TerminalOutputAdapter",
+    "adapters:ZipWriter",
 )

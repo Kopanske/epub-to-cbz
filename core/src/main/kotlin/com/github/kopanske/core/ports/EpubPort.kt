@@ -1,6 +1,7 @@
 package com.github.kopanske.core.ports
 
 import arrow.core.Either
+import com.github.kopanske.core.model.Comic
 
 interface EpubPort {
     sealed class EbookError(
@@ -18,8 +19,8 @@ interface EpubPort {
         ) : EbookError(message, cause)
     }
 
-    fun extractImagesToCbz(
+    fun extractImages(
         epubPath: String,
         outputCbzPath: String,
-    ): Either<EbookError, Unit>
+    ): Either<EbookError, Comic>
 }

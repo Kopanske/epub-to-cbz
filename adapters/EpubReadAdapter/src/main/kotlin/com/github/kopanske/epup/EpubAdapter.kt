@@ -4,54 +4,44 @@ import arrow.core.Either
 import arrow.core.raise.catch
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
+import com.github.kopanske.core.model.Comic
 import com.github.kopanske.core.ports.EpubPort
 import com.github.kopanske.core.ports.EpubPort.EbookError
-import com.github.kopanske.core.ports.ProgressPort
-import java.io.File
-import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
-import java.util.zip.ZipOutputStream
 import javax.xml.parsers.DocumentBuilderFactory
 
-class EpubAdapter(
-    private val progressReport: ProgressPort,
-) : EpubPort {
-    override fun extractImagesToCbz(
+class EpubAdapter : EpubPort {
+    override fun extractImages(
         epubPath: String,
         outputCbzPath: String,
-    ): Either<EbookError, Unit> =
+    ): Either<EbookError, Comic> =
         either {
             val images = listImagesInReadingOrder(epubPath).bind()
-
-            catch(
-                block = {
-                    ZipFile(epubPath).use { inputZip ->
-                        ZipOutputStream(File(outputCbzPath).outputStream()).use { outputZip ->
-
-                            images.forEachIndexed { index, imagePath ->
+            val pictures =
+                catch(
+                    block = {
+                        ZipFile(epubPath).use { inputZip ->
+                            images.mapIndexed { index, imagePath ->
                                 val entry = inputZip.getEntry(imagePath)
                                 ensureNotNull(entry) { EbookError.FileNotfoundError("Could not fine image $imagePath") }
 
                                 val ext = imagePath.substringAfterLast(".")
                                 val newName = "%04d.%s".format(index + 1, ext)
-
-                                val newEntry = ZipEntry(newName)
-                                outputZip.putNextEntry(newEntry)
-
-                                inputZip.getInputStream(entry).use { input ->
-                                    input.copyTo(outputZip)
-                                }
-
-                                outputZip.closeEntry()
-
-                                progressReport.reportProgress(index + 1, images.size)
+                                val imageBytes = inputZip.getInputStream(entry).use { it.readBytes() }
+                                Comic.Picture(
+                                    name = newName,
+                                    data = imageBytes,
+                                )
                             }
                         }
-                    }
-                },
-                catch = { error ->
-                    raise(EbookError.FileAccessError("Error: ${error.message}", error))
-                },
+                    },
+                    catch = { error ->
+                        raise(EbookError.FileAccessError("Error: ${error.message}", error))
+                    },
+                )
+            Comic(
+                outputPath = outputCbzPath,
+                pictures = pictures,
             )
         }
 
