@@ -2,7 +2,7 @@
 arrow = "2.2.2.1"
 kotest = "6.1.11"
 kotlin = "2.3.21"
-kotlinter = "5.4.2"
+kotlinter = "5.5.0"
 
 [libraries]
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
