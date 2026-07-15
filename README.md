@@ -89,7 +89,7 @@ running:
 chcp 65001
 ```
 
-This should work for PowerShell ann cmd.
+This should work for PowerShell and cmd.
 
 ---
 

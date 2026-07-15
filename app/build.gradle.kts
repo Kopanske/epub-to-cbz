@@ -20,7 +20,7 @@ dependencies {
 tasks.shadowJar {
     archiveBaseName.set("ePubToCbz")
     archiveClassifier.set("all")
-
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     mergeServiceFiles()
 
     manifest {
