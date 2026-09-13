@@ -1,7 +1,7 @@
 [versions]
 arrow = "2.2.3"
 kotest = "6.2.4"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 kotlinter = "5.7.0"
 
 [libraries]
