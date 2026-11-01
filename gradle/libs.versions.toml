@@ -1,7 +1,7 @@
 [versions]
-arrow = "2.2.3"
-kotest = "6.2.5"
-kotlin = "2.4.20"
+arrow = "2.3.0.1"
+kotest = "6.2.6"
+kotlin = "2.4.21"
 kotlinter = "5.7.0"
 
 [libraries]
@@ -13,4 +13,4 @@ kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 shadow = "com.gradleup.shadow:9.6.1"
-version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.1"
+version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.2"
